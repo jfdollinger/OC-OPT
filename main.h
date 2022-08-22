@@ -2,6 +2,6 @@
 
 #include <iostream>
 
-#include "Algebra.h"
+#include "algebra.h"
 
 // TODO: Référencez ici les en-têtes supplémentaires nécessaires à votre programme.

@@ -6,7 +6,8 @@ int main()
 {
 	cout << "toto" << endl;
 
-	matrix<double, Dynamic, Dynamic> m(10, 10);
+  size_t t = 10;
+	matrix<double, Dynamic, Dynamic> m(t, t);
 	m.transpose();
 
 	return 0;
