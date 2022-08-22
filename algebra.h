@@ -49,7 +49,7 @@ public:
   }
 
 	inline T& operator ()(const size_t i, const size_t j) {
-		return els[i * M + j];
+		return storage[i * M + j];
 	}
 
   inline matrix<T, M, N> operator *(const matrix<T, M, N> b) {
