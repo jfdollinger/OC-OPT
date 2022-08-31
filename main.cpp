@@ -22,7 +22,7 @@ int main()
     cout << el << endl;
   }
   
-
+  Weight<int, int> *w = new Weight<int, int>(1, 2);
   
 	return 0;
 }

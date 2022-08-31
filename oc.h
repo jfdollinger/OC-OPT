@@ -3,6 +3,7 @@
 
 using std::map;
 using std::vector;
+using std::tuple;
 
 typedef uint16_t nodeType;
 
@@ -69,10 +70,13 @@ public:
 
 
 
-
+template<typename T, typename... Args>
 class Weight {
 private:
+  tuple<T, Args...> args;
+  
 public:
-	Weight() {
+	Weight(T first, Args... others) : args(std::make_tuple(first, others...)) {
+    
 	}
 };
