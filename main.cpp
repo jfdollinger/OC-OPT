@@ -1,3 +1,4 @@
+#include <iostream>
 #include "main.h"
 #include "oc.h"
 
@@ -10,5 +11,18 @@ int main()
   	matrix<double, Dynamic, Dynamic> m(t, t);
   	m.transpose();
   */
+  UnitPath r1(1), r2(2);
+  Path l;
+
+  l = l * r1 * r2;
+
+  cout << l.getHops() << endl;
+
+  for(auto el : l.getPath()) {
+    cout << el << endl;
+  }
+  
+
+  
 	return 0;
 }
