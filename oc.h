@@ -1,40 +1,40 @@
-#include <map>
+#include <unordered_map>
 #include <vector>
 
-using std::map;
-using std::vector;
 using std::tuple;
+using std::unordered_map;
+using std::vector;
 
 typedef uint16_t nodeType;
 
-class AbstractPath {};
+class AbstractOCPath {};
 
-class UnitPath : AbstractPath {
+class OCUnitPath : AbstractOCPath {
 public:
 	nodeType u;
-  
-  UnitPath(nodeType u) {
-    this->u = u;
-  }
+
+	OCUnitPath(nodeType u) {
+		this->u = u;
+	}
 };
 
-class Path : AbstractPath {
+class OCPath : AbstractOCPath {
 private:
-	/*Unordered set of nodes for. Order is provided by setting the right value
-	 * to the key. Should be efficient as the access to the content of the map
-	 * should be performed only a couple of times. */
-	map<nodeType, nodeType> u;
+	/*Unordered set of nodes. Order is provided by setting the right value.
+	 * Should be efficient as the access to the content of the map is
+	 * performed only a couple of times. */
+	unordered_map<nodeType, nodeType> u;
 
 public:
-	Path() : u() {
+	OCPath() : u() {
 	}
 
-	Path(map<nodeType, nodeType> u) {
+	OCPath(unordered_map<nodeType, nodeType> u) {
 		this->u = u;
 	}
 
 	vector<nodeType> getPath() {
-		map<nodeType, nodeType>::iterator it;
+		unordered_map<nodeType, nodeType>::iterator it;
 		vector<nodeType> path(u.size());
 
 		for (it = u.begin(); it != u.end(); ++it) {
@@ -44,13 +44,13 @@ public:
 		return path;
 	}
 
-	int getHops() {
+	int hops() {
 		return this->u.size() - 1;
 	}
 
-  int getNodes() {
-    return this->u.size();
-  }
+	int nodes() {
+		return this->u.size();
+	}
 
 	void insert(nodeType node) {
 		u[node] = u.size();
@@ -60,23 +60,31 @@ public:
 		return u.count(node);
 	}
 
-	Path operator*(UnitPath &right) {
-		Path left(this->u);
-    
+	OCPath operator*(OCUnitPath &right) {
+		OCPath left(this->u);
+
 		left.insert(right.u);
 		return left;
 	}
 };
 
+template <typename T, typename... Args> class OCWeight {
+protected:
+	tuple<T, Args...> args;
 
-
-template<typename T, typename... Args>
-class Weight {
-private:
-  tuple<T, Args...> args;
-  
 public:
-	Weight(T first, Args... others) : args(std::make_tuple(first, others...)) {
-    
+	OCWeight(T first, Args... others)
+		: args(std::make_tuple(first, others...)) {
 	}
+
+	virtual void update(T w1, Args... args) = 0;
+  void operator*=(OCWeight& right) {
+    std::apply(this->update, right.args);
+  }
+};
+
+
+template <typename T, typename... Args> class OCWeightedPath {
+
+
 };

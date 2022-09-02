@@ -1,6 +1,6 @@
 #include <iostream>
 #include "main.h"
-#include "oc.h"
+//#include "oc.h"
 
 using namespace std;
 
@@ -11,18 +11,20 @@ int main()
   	matrix<double, Dynamic, Dynamic> m(t, t);
   	m.transpose();
   */
-  UnitPath r1(1), r2(2);
-  Path l;
+  OCUnitPath r1(1), r2(2);
+  OCPath l;
 
   l = l * r1 * r2;
 
-  cout << l.getHops() << endl;
+  cout << l.hops() << endl;
 
   for(auto el : l.getPath()) {
     cout << el << endl;
   }
   
-  Weight<int, int> *w = new Weight<int, int>(1, 2);
+  //Weight<int, int> *w = new Weight<int, int>(1, 2);
+  ToyWeight n(1, 2);
+  n.update(3, 4);
   
 	return 0;
 }
