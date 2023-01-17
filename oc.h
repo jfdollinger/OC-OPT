@@ -82,10 +82,10 @@ public:
 template <typename T, typename... Args> class OCWeight {
 protected:
 	tuple<T, Args...> weight;
-protected:
-  static std::tuple<T, Args...> *constraints;
 public: 
   typedef std::tuple<T, Args...> Constraints;
+protected:
+  static Constraints *constraints;
 
 public:
 	OCWeight(T first, Args... others)
@@ -101,7 +101,7 @@ public:
 	void operator<=(OCWeight &right) {
 		std::apply(this->check, right.weight);
 	}
-  static void setConstraints(tuple<T, Args...> *constraints) {
+  static void setConstraints(Constraints *constraints) {
     OCWeight<T, Args...>::constraints = constraints;
   }
 };
