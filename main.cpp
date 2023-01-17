@@ -1,30 +1,31 @@
-#include <iostream>
 #include "main.h"
+#include <iostream>
 //#include "oc.h"
 
 using namespace std;
 
-int main()
-{
-  /*
-    size_t t = 10;
-  	matrix<double, Dynamic, Dynamic> m(t, t);
-  	m.transpose();
-  */
-  OCUnitPath r1(1), r2(2);
-  OCPath l;
+int main() {
+	/*
+	  size_t t = 10;
+	  matrix<double, Dynamic, Dynamic> m(t, t);
+	  m.transpose();
+	*/
+	OCPath l, r1(1), r2(2), r3(5);
 
-  l = l * r1 * r2;
+	l = r1 * r3 * r2;
+  vector<nodeType> t = r1.getPath();
 
-  cout << l.hops() << endl;
-
-  for(auto el : l.getPath()) {
-    cout << el << endl;
+  for (auto el : l.getPath()) {
+	  cout << el << endl;
   }
+
   
-  //Weight<int, int> *w = new Weight<int, int>(1, 2);
+  ToyWeight::setConstraints(new ToyWeight::Constraints(0, 0));
+
   ToyWeight n(1, 2);
   n.update(3, 4);
-  
-	return 0;
+
+  ToyWeightedPath p(n);
+
+  return 0;
 }

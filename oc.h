@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 using std::tuple;
 using std::unordered_map;
@@ -7,84 +8,142 @@ using std::vector;
 
 typedef uint16_t nodeType;
 
-class AbstractOCPath {};
-
-class OCUnitPath : AbstractOCPath {
-public:
-	nodeType u;
-
-	OCUnitPath(nodeType u) {
-		this->u = u;
-	}
-};
-
-class OCPath : AbstractOCPath {
+class OCPath {
 private:
+  /*
+  * Keeping the source node appart to improve computation of the star operator.
+  */
+	nodeType source;
+
 	/*Unordered set of nodes. Order is provided by setting the right value.
 	 * Should be efficient as the access to the content of the map is
 	 * performed only a couple of times. */
-	unordered_map<nodeType, nodeType> u;
+	unordered_map<nodeType, nodeType> nodes;
 
 public:
-	OCPath() : u() {
+  const static OCPath EMPTY_PATH;
+  
+public:
+	OCPath() : nodes() {  //empty path  
 	}
-
-	OCPath(unordered_map<nodeType, nodeType> u) {
-		this->u = u;
+	OCPath(nodeType n) : nodes() {
+		insert(n);
 	}
-
+  OCPath(OCPath &p) {
+		source = p.source;
+		nodes = p.nodes;
+	}
 	vector<nodeType> getPath() {
-		unordered_map<nodeType, nodeType>::iterator it;
-		vector<nodeType> path(u.size());
+		vector<nodeType> path(nodes.size());
 
-		for (it = u.begin(); it != u.end(); ++it) {
-			path[it->second] = it->first;
-		}
-
+    unordered_map<nodeType, nodeType>::iterator it;
+    for (it = nodes.begin(); it != nodes.end(); ++it) {
+      path[it->second] = it->first;
+    }
 		return path;
 	}
+	int hopCount() {
+		int n = nodes.size();
 
-	int hops() {
-		return this->u.size() - 1;
+		if (n != 0) {
+			n = n - 1;
+		}
+		return n;
 	}
-
-	int nodes() {
-		return this->u.size();
+	int size() {
+		return nodes.size();
 	}
-
-	void insert(nodeType node) {
-		u[node] = u.size();
+	inline bool isEmpty() {
+		return size() == 0;
 	}
-
 	bool hasNode(nodeType node) {
-		return u.count(node);
+		return nodes.count(node);
 	}
+	nodeType getHead() {
+		return source;
+	}
+  void insert(nodeType node) {
+    int n = nodes.size();
+    
+    if(n == 0) { 
+      this->source = node; 
+    }
+    nodes[node] = n;
+  }
+	OCPath operator*(OCPath &right) {
+		OCPath left = *this;
 
-	OCPath operator*(OCUnitPath &right) {
-		OCPath left(this->u);
+		left.insert(right.getHead());
 
-		left.insert(right.u);
 		return left;
 	}
 };
 
 template <typename T, typename... Args> class OCWeight {
 protected:
-	tuple<T, Args...> args;
+	tuple<T, Args...> weight;
+protected:
+  static std::tuple<T, Args...> *constraints;
+public: 
+  typedef std::tuple<T, Args...> Constraints;
 
 public:
 	OCWeight(T first, Args... others)
-		: args(std::make_tuple(first, others...)) {
+		: weight(std::make_tuple(first, others...)) {
 	}
 
 	virtual void update(T w1, Args... args) = 0;
-  void operator*=(OCWeight& right) {
-    std::apply(this->update, right.args);
+	virtual bool check() = 0;
+
+	void operator*=(OCWeight &right) {
+		std::apply(this->update, right.weight);
+	}
+	void operator<=(OCWeight &right) {
+		std::apply(this->check, right.weight);
+	}
+  static void setConstraints(tuple<T, Args...> *constraints) {
+    OCWeight<T, Args...>::constraints = constraints;
   }
 };
 
+template <typename T, typename... Args> 
+tuple<T, Args...> *OCWeight<T, Args...>::constraints = 0;
 
-template <typename T, typename... Args> class OCWeightedPath {
+template <typename T> class OCWeightedPath {
 
+public:
+  OCPath path;
+	T weight;
 
+public:
+  static OCWeightedPath EMPTY_WEIGHTED_PATH;
+
+public:
+	OCWeightedPath(T weight) : weight(weight) {
+    
+	}
+  OCWeightedPath(OCWeightedPath &wp) {
+    
+  }
+
+  OCWeightedPath operator*(OCWeightedPath &right) {
+    OCWeightedPath left;
+    
+    if(this->path.isEmpty() || right.path.isEmpty()) {
+      left = OCWeightedPath::EMPTY_WEIGHTED_PATH;
+    }
+    else {
+      OCWeightedPath left = *this;
+      left.weight = left.weight * right.weight;
+      /*if(!(left.weight <= )) {
+        
+      }
+      else {
+              
+      }*/
+    }
+    return left;
+  }
 };
+
+template <typename T, typename... Args> class OCWeightedPathUnion {};
