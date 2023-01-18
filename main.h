@@ -23,15 +23,14 @@ public:
 		std::get<1>(weight) = std::get<1>(weight) + b;
 	}
 
-	bool check() {
-    return std::get<0>(weight) <= std::get<0>(*ToyWeight::constraints)
-      && std::get<1>(weight) <= std::get<1>(*ToyWeight::constraints);
-    return true;
+	bool check(ConstraintsType &constraints) {
+    return std::get<0>(weight) <= std::get<0>(constraints)
+      && std::get<1>(weight) <= std::get<1>(constraints);
 	}
 };
 
-class ToyWeightedPath : OCWeightedPath<ToyWeight> {
+class ToyWeightedPath : OCWeightedPath<int, int> {
 public:
-	ToyWeightedPath(ToyWeight w) : OCWeightedPath(w) {
+	ToyWeightedPath(OCPath *p, ToyWeight *w) : OCWeightedPath(p, w) {
 	}
 };

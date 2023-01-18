@@ -1,6 +1,6 @@
+#include <iostream>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
 using std::tuple;
 using std::unordered_map;
@@ -10,9 +10,10 @@ typedef uint16_t nodeType;
 
 class OCPath {
 private:
-  /*
-  * Keeping the source node appart to improve computation of the star operator.
-  */
+	/*
+	 * Keeping the source node appart to improve computation of the star
+	 * operator.
+	 */
 	nodeType source;
 
 	/*Unordered set of nodes. Order is provided by setting the right value.
@@ -21,25 +22,25 @@ private:
 	unordered_map<nodeType, nodeType> nodes;
 
 public:
-  const static OCPath EMPTY_PATH;
-  
+	const static OCPath EMPTY_PATH;
+
 public:
-	OCPath() : nodes() {  //empty path  
+	OCPath() : nodes() { // empty path
 	}
 	OCPath(nodeType n) : nodes() {
 		insert(n);
 	}
-  OCPath(OCPath &p) {
+	OCPath(OCPath &p) {
 		source = p.source;
 		nodes = p.nodes;
 	}
 	vector<nodeType> getPath() {
 		vector<nodeType> path(nodes.size());
 
-    unordered_map<nodeType, nodeType>::iterator it;
-    for (it = nodes.begin(); it != nodes.end(); ++it) {
-      path[it->second] = it->first;
-    }
+		unordered_map<nodeType, nodeType>::iterator it;
+		for (it = nodes.begin(); it != nodes.end(); ++it) {
+			path[it->second] = it->first;
+		}
 		return path;
 	}
 	int hopCount() {
@@ -62,14 +63,14 @@ public:
 	nodeType getHead() {
 		return source;
 	}
-  void insert(nodeType node) {
-    int n = nodes.size();
-    
-    if(n == 0) { 
-      this->source = node; 
-    }
-    nodes[node] = n;
-  }
+	void insert(nodeType node) {
+		int n = nodes.size();
+
+		if (n == 0) {
+			this->source = node;
+		}
+		nodes[node] = n;
+	}
 	OCPath operator*(OCPath &right) {
 		OCPath left = *this;
 
@@ -79,13 +80,17 @@ public:
 	}
 };
 
+class OCWeightType {};
+
 template <typename T, typename... Args> class OCWeight {
 protected:
 	tuple<T, Args...> weight;
-public: 
-  typedef std::tuple<T, Args...> Constraints;
+
+public:
+	typedef std::tuple<T, Args...> ConstraintsType;
+
 protected:
-  static Constraints *constraints;
+	static ConstraintsType *constraints;
 
 public:
 	OCWeight(T first, Args... others)
@@ -93,57 +98,56 @@ public:
 	}
 
 	virtual void update(T w1, Args... args) = 0;
-	virtual bool check() = 0;
+	virtual bool check(ConstraintsType &constraints) = 0;
 
 	void operator*=(OCWeight &right) {
 		std::apply(this->update, right.weight);
 	}
-	void operator<=(OCWeight &right) {
-		std::apply(this->check, right.weight);
+	void operator<=(ConstraintsType &right) {
+		this->check(right);
 	}
-  static void setConstraints(Constraints *constraints) {
-    OCWeight<T, Args...>::constraints = constraints;
-  }
+	static void setConstraints(ConstraintsType *constraints) {
+		OCWeight<T, Args...>::constraints = constraints;
+	}
 };
 
-template <typename T, typename... Args> 
+template <typename T, typename... Args>
 tuple<T, Args...> *OCWeight<T, Args...>::constraints = 0;
 
-template <typename T> class OCWeightedPath {
+template <typename T, typename... Args> class OCWeightedPath {
+public:
+	typedef OCWeight<T, Args...> OCWeightType;
 
 public:
-  OCPath path;
-	T weight;
+	OCPath *path;
+	OCWeightType *weight;
 
 public:
-  static OCWeightedPath EMPTY_WEIGHTED_PATH;
+	static OCWeightedPath<T, Args...> EMPTY_WEIGHTED_PATH();
+	static typename OCWeightType::ConstraintsType *constraints;
 
 public:
-	OCWeightedPath(T weight) : weight(weight) {
-    
+	OCWeightedPath() {
 	}
-  OCWeightedPath(OCWeightedPath &wp) {
-    
-  }
+	OCWeightedPath(OCPath *path, OCWeightType *weight) {
+	}
+	OCWeightedPath(OCWeightedPath &wp) {
+	}
 
-  OCWeightedPath operator*(OCWeightedPath &right) {
-    OCWeightedPath left;
-    
-    if(this->path.isEmpty() || right.path.isEmpty()) {
-      left = OCWeightedPath::EMPTY_WEIGHTED_PATH;
-    }
-    else {
-      OCWeightedPath left = *this;
-      left.weight = left.weight * right.weight;
-      /*if(!(left.weight <= )) {
-        
-      }
-      else {
-              
-      }*/
-    }
-    return left;
-  }
+	OCWeightedPath operator*(OCWeightedPath &right) {
+		OCWeightedPath left = *this;
+		if (left.path.isEmpty() || right.path.isEmpty()) {
+			return OCWeightedPath::EMPTY_WEIGHTED_PATH;
+		} else {
+			left.weight = left.weight * right.weight;
+			if (left.weight <= constraints) {
+				left.path = left.path * right.path;
+			} else {
+				return OCWeightedPath::EMPTY_WEIGHTED_PATH;
+			}
+		}
+		return left;
+	}
 };
 
 template <typename T, typename... Args> class OCWeightedPathUnion {};

@@ -20,12 +20,12 @@ int main() {
   }
 
   
-  ToyWeight::setConstraints(new ToyWeight::Constraints(0, 0));
+  ToyWeight::setConstraints(new ToyWeight::ConstraintsType(0, 0));
 
   ToyWeight n(1, 2);
   n.update(3, 4);
 
-  ToyWeightedPath p(n);
+  //ToyWeightedPath p(n);
 
   return 0;
 }
