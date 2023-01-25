@@ -1,9 +1,11 @@
 #pragma once
 
-#include "oc.h"
+#include "oc_wp.h"
+
 #include <iostream>
 #include <tuple>
 
+using namespace std;
 using std::get;
 using std::tuple;
 
@@ -12,25 +14,27 @@ using std::tuple;
 // TODO: Référencez ici les en-têtes supplémentaires nécessaires à votre
 // programme.
 
-class ToyWeight : public OCWeight<int, int> {
+class ToyWeight : public AbstractOCWeight<ToyWeight, int> {
 public:
-	ToyWeight(int a, int b) : OCWeight<int, int>(a, b) {
-     //OCWeight<int, int>::constraints = NULL;
+  ToyWeight() : AbstractOCWeight<ToyWeight, int>() {
+    
+  }
+
+	ToyWeight(int a) : AbstractOCWeight<ToyWeight, int>(a) {
+		// OCWeight<int, int>::constraints = NULL;
 	}
 
-	void update(int a, int b) {
-		std::get<0>(weight) = std::get<0>(weight) + a;
-		std::get<1>(weight) = std::get<1>(weight) + b;
+	ToyWeight operator*(ToyWeight &right) {
+    return ToyWeight(get<0>(weight) + get<0>(right.weight));
 	}
 
-	bool check(ConstraintsType &constraints) {
-    return std::get<0>(weight) <= std::get<0>(constraints)
-      && std::get<1>(weight) <= std::get<1>(constraints);
-	}
+  bool operator<=(tuple<int> &right) {
+    return true;
+  }
 };
 
-class ToyWeightedPath : OCWeightedPath<int, int> {
+/*class ToyWeightedPath : OCWeightedPath<int, int> {
 public:
 	ToyWeightedPath(OCPath *p, ToyWeight *w) : OCWeightedPath(p, w) {
 	}
-};
+};*/

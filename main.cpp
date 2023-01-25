@@ -19,11 +19,10 @@ int main() {
 	  cout << el << endl;
   }
 
-  
-  ToyWeight::setConstraints(new ToyWeight::ConstraintsType(0, 0));
+  ToyWeight n(1);
 
-  ToyWeight n(1, 2);
-  n.update(3, 4);
+  OCWeightedPath<ToyWeight> wp1(n, r1), wp2(n, r2);
+  wp1 * wp2;
 
   //ToyWeightedPath p(n);
 
