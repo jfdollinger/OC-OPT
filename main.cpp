@@ -19,12 +19,18 @@ int main() {
 	  cout << el << endl;
   }
 
-  ToyWeight n(1);
+  ToyWeight n0(1), n1(3);
 
-  OCWeightedPath<ToyWeight> wp1(n, r1), wp2(n, r2);
-  wp1 * wp2;
+  OCWeightedPath<ToyWeight> wp1(n0, r1), wp2(n1, r2), wp3(n1, r3);
+  OCWeightedPath<ToyWeight>::setConstraints(ToyWeight::MetricsType(10));
+  
+  wp1 = wp1 * wp2 * wp3;
+  //wp1 = wp1 * wp2;
+
+  std::cout << wp1.toString();
 
   //ToyWeightedPath p(n);
+  
 
   return 0;
 }

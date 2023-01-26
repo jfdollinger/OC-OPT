@@ -27,9 +27,11 @@ public:
 	ToyWeight operator*(ToyWeight &right) {
     return ToyWeight(get<0>(weight) + get<0>(right.weight));
 	}
-
   bool operator<=(tuple<int> &right) {
-    return true;
+    return get<0>(weight) <= get<0>(right);
+  }
+  std::string toString() {
+    return "(" + std::to_string(get<0>(weight)) + ")";
   }
 };
 

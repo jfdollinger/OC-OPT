@@ -7,7 +7,7 @@ class AbstractOCWeightedPath {
 public:
 	AbstractOCWeightedPath() {
 	}
-	virtual void print() = 0;
+	virtual std::string toString() = 0;
 };
 
 template <class ConcreteOCWeight> class OCWeightedPathUnion;
@@ -31,7 +31,7 @@ public:
 	operator*(OCWeightedPath<ConcreteOCWeight> &right);
 	OCWeightedPathUnion<ConcreteOCWeight>
 	operator+(OCWeightedPath<ConcreteOCWeight> &right);
-	void print();
+	std::string toString();
 
 public:
 	static void
@@ -40,13 +40,16 @@ public:
 
 template <class ConcreteOCWeight>
 class OCWeightedPathUnion : public AbstractOCWeightedPath {
+protected:
+  std::vector<OCWeightedPath<ConcreteOCWeight>> weightedPaths;
 public:
 	OCWeightedPathUnion(const OCWeightedPath<ConcreteOCWeight> &wp);
+  OCWeightedPathUnion(const OCWeightedPath<ConcreteOCWeight> &left, const OCWeightedPath<ConcreteOCWeight> &right);
 	OCWeightedPathUnion<ConcreteOCWeight>
 	operator*(OCWeightedPath<ConcreteOCWeight> &right);
 	OCWeightedPathUnion<ConcreteOCWeight>
 	operator+(OCWeightedPath<ConcreteOCWeight> &right);
-	void print();
+	std::string toString();
 };
 
 template <class ConcreteOCWeight>
@@ -94,8 +97,8 @@ operator+(OCWeightedPath<ConcreteOCWeight> &right) {
 }
 
 template <class ConcreteOCWeight>
-void OCWeightedPath<ConcreteOCWeight>::print() {
-	std::cout << "";
+std::string OCWeightedPath<ConcreteOCWeight>::toString() {
+	return path.toString() + weight.toString();
 }
 
 template <class ConcreteOCWeight>
@@ -107,6 +110,13 @@ template <class ConcreteOCWeight>
 OCWeightedPathUnion<ConcreteOCWeight>::OCWeightedPathUnion(
 	const OCWeightedPath<ConcreteOCWeight> &wp)
 	: AbstractOCWeightedPath() {
+}
+
+template <class ConcreteOCWeight>
+OCWeightedPathUnion<ConcreteOCWeight>::OCWeightedPathUnion(
+	const OCWeightedPath<ConcreteOCWeight> &left, const OCWeightedPath<ConcreteOCWeight> &right)
+	: AbstractOCWeightedPath() {
+    
 }
 
 template <class ConcreteOCWeight>
@@ -122,8 +132,8 @@ operator+(OCWeightedPath<ConcreteOCWeight> &right) {
 }
 
 template <class ConcreteOCWeight>
-void OCWeightedPathUnion<ConcreteOCWeight>::print() {
-	std::cout << "";
+std::string OCWeightedPathUnion<ConcreteOCWeight>::toString() {
+	return "";
 }
 
 /*template <typename T, typename... Args>

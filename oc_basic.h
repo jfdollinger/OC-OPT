@@ -80,6 +80,20 @@ public:
 
 		return left;
 	}
+
+  std::string toString() {
+    int i;
+    std::string str = "<";
+
+    vector<nodeType> path = getPath();
+    for(i = 0; i < path.size() - 1; ++i) {
+      str += std::to_string(path[i]) + ", ";
+    }
+    if(path.size() > 0) {
+      str += std::to_string(path[i]);
+    }
+    return str + ">";
+  }
 };
 
 template <class ConcreteWeight, typename T, typename... Args>
@@ -89,7 +103,7 @@ public:
 public:
 	std::tuple<T, Args...> weight;
 
-	AbstractOCWeight() {
+	AbstractOCWeight(){
 	}
 	AbstractOCWeight(T first, Args... others)
 		: weight(std::make_tuple(first, others...)) {
@@ -101,4 +115,5 @@ public:
 
 	virtual ConcreteWeight operator*(ConcreteWeight &right) = 0;
 	virtual bool operator<=(tuple<T, Args...> &right) = 0;
+  virtual std::string toString() = 0;
 };
